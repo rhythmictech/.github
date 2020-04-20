@@ -1,7 +1,7 @@
 # .github [![GH Action Status](https://github.com/rhythmictech/.github/workflows/pre-commit-check/badge.svg)](https://github.com/rhythmictech/.github/actions)
 GitHub Actions and Templates for the Organization
 
-## Table Of cotnents
+## Table Of Contents
 Generated with [doctoc](https://github.com/thlorenz/doctoc)
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
