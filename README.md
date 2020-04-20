@@ -38,6 +38,7 @@ Inspirations, references, and generally cool stuff.
 Sort of a mini [awesome-list](https://github.com/topics/awesome-list)
 
 ### Awesome Community Files
+- Community File Templates Awesome List - https://github.com/devspace/awesome-github-templates
 - Homebrew's Community Files - https://github.com/Homebrew/.github
 - React Native's Community Files - https://github.com/react-native-community/.github
 - Atom's Community Files - https://github.com/atom/.github
