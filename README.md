@@ -29,3 +29,7 @@ Sort of a mini [awesome-list](https://github.com/topics/awesome-list)
 ### Awesome GitHub Actions
 - Probot: A GH Actions & Apps Framework - https://probot.github.io/
 - Homebrew's GH Actions - https://github.com/Homebrew/actions
+
+### Awesome Code Owners
+Okay, just a link to the documentation. But it's very existence is pretty awesome
+- https://help.github.com/en/github/creating-cloning-and-archiving-repositories/about-code-owners
