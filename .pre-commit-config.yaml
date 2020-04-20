@@ -5,3 +5,7 @@
     - id: end-of-file-fixer
     - id: trailing-whitespace
     - id: no-commit-to-branch
+- repo: https://github.com/thlorenz/doctoc
+  rev: v1.4.0
+  hooks:
+    - id: doctoc
