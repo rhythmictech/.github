@@ -1,0 +1,10 @@
+#
+# https://help.github.com/en/github/building-a-strong-community/configuring-issue-templates-for-your-repository
+blank_issues_enabled: true
+contact_links:
+  - name: GitHub Community Support
+    url: https://github.community/
+    about: Please ask and answer questions here.
+  - name: Contact Us at Rhythmictech
+    url: https://www.rhythmictech.com/contact-us/
+    about: Find out more about Rhythmictech
