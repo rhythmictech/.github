@@ -6,7 +6,6 @@ Generated with [doctoc](https://github.com/thlorenz/doctoc)
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-
 - [About](#about)
 - [Getting Started](#getting-started)
   - [Pre-commit](#pre-commit)
