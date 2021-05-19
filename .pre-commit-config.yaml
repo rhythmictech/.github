@@ -1,12 +1,13 @@
 ---
+repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v2.4.0
+  rev: v3.4.0
   hooks:
     - id: end-of-file-fixer
     - id: trailing-whitespace
     - id: no-commit-to-branch
 - repo: https://github.com/thlorenz/doctoc
-  rev: v1.4.0
+  rev: v2.0.0
   hooks:
     - id: doctoc
       exclude: '^(.github).*'
