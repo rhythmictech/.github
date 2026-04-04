@@ -1,0 +1,52 @@
+# Vulnerability Scanning — Grype + osv-scanner
+#
+# Two independent scanners on separate runners. If one scanner's action
+# is compromised, it cannot tamper with the other's results.
+#
+# Usage in consuming repos:
+#   jobs:
+#     vuln-scan:
+#       uses: rhythmictech/.github/.github/workflows/vuln-scan.yml@main
+
+name: Vulnerability Scan
+
+on:
+  workflow_call:
+    inputs:
+      grype_severity_cutoff:
+        description: "Minimum severity to fail build (negligible, low, medium, high, critical)"
+        type: string
+        default: "high"
+      scan_path:
+        description: "Path to scan"
+        type: string
+        default: "."
+      runs_on:
+        description: "Runner label"
+        type: string
+        default: "ubuntu-latest"
+
+jobs:
+  grype:
+    name: Grype (Anchore)
+    runs-on: ${{ inputs.runs_on }}
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - uses: anchore/scan-action@e1165082ffb1fe366ebaf02d8526e7c4989ea9d2 # v7.4.0
+        with:
+          path: ${{ inputs.scan_path }}
+          fail-build: "true"
+          severity-cutoff: ${{ inputs.grype_severity_cutoff }}
+
+  osv-scanner:
+    name: OSV Scanner (Google)
+    runs-on: ${{ inputs.runs_on }}
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - uses: google/osv-scanner-action@c51854704019a247608d928f370c98740469d4b5 # v2.3.5
+        with:
+          scan-args: |-
+            --recursive
+            ${{ inputs.scan_path }}

@@ -1,6 +1,2 @@
-#
-# Each line is a file pattern followed by one or more owners.
-# https://help.github.com/en/github/creating-cloning-and-archiving-repositories/about-code-owners
-
-# global code owner
-* @sblack4
+# Reusable workflows and org-level config
+* @cdaniluk

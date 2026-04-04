@@ -1,51 +1,77 @@
-# .github [![GH Action Status](https://github.com/rhythmictech/.github/workflows/pre-commit-check/badge.svg)](https://github.com/rhythmictech/.github/actions)
-GitHub Actions and Templates for the Organization
+# rhythmictech/.github
 
-## Table Of Contents
-Generated with [doctoc](https://github.com/thlorenz/doctoc)
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+Org-level GitHub configuration — reusable CI workflows for supply chain security.
 
-- [About](#about)
-- [Getting Started](#getting-started)
-  - [Pre-commit](#pre-commit)
-- [More](#more)
-  - [Awesome Community Files](#awesome-community-files)
-  - [Awesome GitHub Actions](#awesome-github-actions)
-  - [Awesome Code Owners](#awesome-code-owners)
+## Reusable Workflows
 
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+| Workflow | What | Fails on |
+|----------|------|----------|
+| `supply-chain-gate` | Registry config, SHA pinning, Dockerfile FROM | Missing/wrong .npmrc, public PyPI refs, tag-pinned actions |
+| `vuln-scan` | Grype + osv-scanner (parallel, independent runners) | High/critical vulnerabilities |
+| `secret-scan` | TruffleHog (full history, verified secrets only) | Verified secrets in git history |
 
-## About
-This repo holds;
-- Rhythmic [GitHub Actions](https://help.github.com/en/actions/building-actions/about-actions)
-- Rhythmic [Community Files](https://help.github.com/en/github/building-a-strong-community/creating-a-default-community-health-file)
+### Usage
 
-## Getting Started
+Add to any repo's CI workflow:
 
-### Pre-commit
-This repo uses [pre-commit](https://pre-commit.com/).
-`pre-commit` can be installed with `brew` or `pip`.
-Once `pre-commit` is installed the git hooks can be installed like below:
+```yaml
+# .github/workflows/ci.yml
+name: CI
+on: [pull_request]
+
+jobs:
+  supply-chain-gate:
+    uses: rhythmictech/.github/.github/workflows/supply-chain-gate.yml@main
+    with:
+      nexus_hostname: nexus.rhythmic.tools
+
+  vuln-scan:
+    uses: rhythmictech/.github/.github/workflows/vuln-scan.yml@main
+
+  secret-scan:
+    uses: rhythmictech/.github/.github/workflows/secret-scan.yml@main
 ```
->  pre-commit install
-pre-commit installed at .git/hooks/pre-commit
+
+All three run in parallel. No secrets needed.
+
+### Self-hosted runners
+
+All workflows accept a `runs_on` input (default: `ubuntu-latest`):
+
+```yaml
+  vuln-scan:
+    uses: rhythmictech/.github/.github/workflows/vuln-scan.yml@main
+    with:
+      runs_on: cicd
 ```
 
-## More
-Inspirations, references, and generally cool stuff.
-Sort of a mini [awesome-list](https://github.com/topics/awesome-list)
+### Pre-commit (detect-secrets)
 
-### Awesome Community Files
-- Community File Templates Awesome List - https://github.com/devspace/awesome-github-templates
-- Homebrew's Community Files - https://github.com/Homebrew/.github
-- React Native's Community Files - https://github.com/react-native-community/.github
-- Atom's Community Files - https://github.com/atom/.github
+For local secret detection, add to each repo:
 
-### Awesome GitHub Actions
-- Probot: A GH Actions & Apps Framework - https://probot.github.io/
-- Homebrew's GH Actions - https://github.com/Homebrew/actions
+```bash
+pip install pre-commit detect-secrets
+```
 
-### Awesome Code Owners
-Okay, just a link to the documentation. But it's very existence is pretty awesome
-- https://help.github.com/en/github/creating-cloning-and-archiving-repositories/about-code-owners
+Create `.pre-commit-config.yaml`:
+
+```yaml
+repos:
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+```
+
+Then:
+
+```bash
+detect-secrets scan > .secrets.baseline
+pre-commit install
+```
+
+## Related
+
+- [rhythmic-security](https://github.com/rhythmictech/rhythmic-security) — IaC for Cloudflare, device posture, Datadog
+- [CI/CD Supply Chain Security Architecture](https://github.com/rhythmictech/rhythmic-security/blob/main/cicd-architecture-design.md) — full design doc

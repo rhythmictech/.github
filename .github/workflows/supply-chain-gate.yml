@@ -1,0 +1,83 @@
+# Supply Chain Policy Gate
+#
+# Reusable workflow that validates supply chain security controls.
+# Add as a required status check on all repos via branch protection.
+#
+# Usage in consuming repos:
+#   jobs:
+#     supply-chain-gate:
+#       uses: rhythmictech/.github/.github/workflows/supply-chain-gate.yml@main
+#       with:
+#         nexus_hostname: nexus.rhythmic.tools
+
+name: Supply Chain Gate
+
+on:
+  workflow_call:
+    inputs:
+      nexus_hostname:
+        description: "Internal Nexus repository hostname"
+        required: true
+        type: string
+      runs_on:
+        description: "Runner label"
+        type: string
+        default: "ubuntu-latest"
+
+jobs:
+  validate:
+    runs-on: ${{ inputs.runs_on }}
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Check .npmrc points to internal registry
+        run: |
+          NEXUS="${{ inputs.nexus_hostname }}"
+          if [ -f .npmrc ]; then
+            if ! grep -q "$NEXUS" .npmrc; then
+              echo "::error::.npmrc does not point to internal Nexus registry ($NEXUS)"
+              exit 1
+            fi
+          elif [ -f package.json ]; then
+            echo "::error::.npmrc is missing but package.json exists. Add .npmrc pointing to $NEXUS"
+            exit 1
+          fi
+
+      - name: Check pip config does not reference public PyPI
+        run: |
+          for f in pip.conf setup.cfg pyproject.toml; do
+            if [ -f "$f" ] && grep -qi "pypi.org" "$f"; then
+              echo "::error::$f references public PyPI. Use internal Nexus registry."
+              exit 1
+            fi
+          done
+
+      - name: Check Dockerfile FROM lines
+        run: |
+          NEXUS="${{ inputs.nexus_hostname }}"
+          WARN=0
+          for df in $(find . -name 'Dockerfile*' -not -path '*/.git/*' 2>/dev/null); do
+            while IFS= read -r line; do
+              if echo "$line" | grep -qvE "(scratch|$NEXUS)"; then
+                echo "::warning file=$df::FROM line may not use internal registry: $line"
+                WARN=1
+              fi
+            done < <(grep -E '^FROM\s' "$df" 2>/dev/null)
+          done
+          # Warn only — don't fail on Dockerfile FROM lines (many legitimate base images)
+
+      - name: Check GitHub Actions use SHA pins
+        run: |
+          FAIL=0
+          for wf in .github/workflows/*.yml .github/workflows/*.yaml; do
+            [ -f "$wf" ] || continue
+            if grep -nE 'uses:\s+\S+@v[0-9]' "$wf"; then
+              echo "::error file=$wf::GitHub Action referenced by tag instead of SHA pin"
+              FAIL=1
+            fi
+            if grep -nE 'uses:\s+\S+@main' "$wf"; then
+              echo "::error file=$wf::GitHub Action referenced by branch instead of SHA pin"
+              FAIL=1
+            fi
+          done
+          exit $FAIL
