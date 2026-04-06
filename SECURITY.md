@@ -1,6 +1,6 @@
 # Security Policy
 
-Rhythmic Technologies takes security seriously. As an AWS Advanced Tier Consulting Partner, we hold ourselves to high standards for the security of our open source projects.
+Rhythmic Technologies takes security seriously. We hold ourselves to high standards for the security of our open source projects.
 
 ## Supported Versions
 
