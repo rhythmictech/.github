@@ -1,12 +1,10 @@
 # Rhythmic
 
-[Rhythmic](https://rhythmictech.com) is an AWS Advanced Tier Partner specializing in cloud infrastructure, security, and DevOps.
-
-We build and maintain open source Terraform modules for the AWS ecosystem.
+[Rhythmic](https://rhythmictech.com) is an AI and cloud infrastructure company specialized in complex, autonomous systems. We build and maintain a variety of public projects, including IaC modules/libraries, demonstration projects, helper tools and libraries, and services that are relevant to anyone building modern systems.
 
 ## Reusable Workflows
 
-This repository provides reusable GitHub Actions workflows for Terraform module CI:
+This repository provides reusable GitHub Actions workflows for IaC CI:
 
 | Workflow | Purpose |
 |----------|---------|
