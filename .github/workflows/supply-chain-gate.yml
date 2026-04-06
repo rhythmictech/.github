@@ -52,6 +52,23 @@ jobs:
             fi
           done
 
+      - name: Check Go modules use internal proxy
+        run: |
+          NEXUS="${{ inputs.nexus_hostname }}"
+          if [ -f go.mod ]; then
+            FOUND=0
+            for f in go.env .env; do
+              if [ -f "$f" ] && grep -q "$NEXUS" "$f"; then
+                FOUND=1
+                break
+              fi
+            done
+            if [ "$FOUND" -eq 0 ]; then
+              echo "::error::go.mod exists but no go.env found pointing GOPROXY to internal Nexus registry ($NEXUS). Copy go.env from rhythmic-security/github/examples/go.env"
+              exit 1
+            fi
+          fi
+
       - name: Check Dockerfile FROM lines
         run: |
           NEXUS="${{ inputs.nexus_hostname }}"
