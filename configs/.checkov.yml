@@ -1,0 +1,5 @@
+framework:
+  - terraform
+compact: true
+quiet: true
+skip-check: []
