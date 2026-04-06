@@ -1,0 +1,74 @@
+name: Module PR
+on:
+  workflow_call:
+    inputs:
+      terraform_version:
+        type: string
+        default: "latest"
+      tflint_version:
+        type: string
+        default: "latest"
+      runs_on:
+        type: string
+        default: "ubuntu-latest"
+      run_tests:
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: write
+  security-events: write
+
+jobs:
+  lint:
+    uses: rhythmictech/.github/.github/workflows/lint-general.yml@master
+    with:
+      runs_on: ${{ inputs.runs_on }}
+    permissions:
+      contents: read
+      pull-requests: write
+      checks: write
+
+  secret-scan:
+    uses: rhythmictech/.github/.github/workflows/secret-scan.yml@master
+    with:
+      runs_on: ${{ inputs.runs_on }}
+    permissions:
+      contents: read
+
+  dependency-review:
+    uses: rhythmictech/.github/.github/workflows/dependency-review.yml@master
+    with:
+      runs_on: ${{ inputs.runs_on }}
+    permissions:
+      contents: read
+      pull-requests: write
+
+  terraform-ci:
+    uses: rhythmictech/.github/.github/workflows/terraform-module-ci.yml@master
+    with:
+      terraform_version: ${{ inputs.terraform_version }}
+      tflint_version: ${{ inputs.tflint_version }}
+      runs_on: ${{ inputs.runs_on }}
+      run_tests: ${{ inputs.run_tests }}
+    permissions:
+      contents: read
+      pull-requests: write
+      checks: write
+
+  terraform-docs:
+    uses: rhythmictech/.github/.github/workflows/terraform-docs.yml@master
+    with:
+      runs_on: ${{ inputs.runs_on }}
+    permissions:
+      contents: write
+
+  terraform-security:
+    uses: rhythmictech/.github/.github/workflows/terraform-security.yml@master
+    with:
+      runs_on: ${{ inputs.runs_on }}
+    permissions:
+      contents: read
+      security-events: write

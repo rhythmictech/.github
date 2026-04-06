@@ -1,0 +1,103 @@
+name: Terraform Module CI
+on:
+  workflow_call:
+    inputs:
+      terraform_version:
+        type: string
+        default: "latest"
+      tflint_version:
+        type: string
+        default: "latest"
+      tflint_config:
+        type: string
+        default: ".tflint.hcl"
+      runs_on:
+        type: string
+        default: "ubuntu-latest"
+      run_tests:
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+jobs:
+  fmt:
+    name: Format
+    runs-on: ${{ inputs.runs_on }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+        with:
+          terraform_version: ${{ inputs.terraform_version }}
+      - name: Check formatting
+        run: terraform fmt -check -recursive -diff
+
+  validate:
+    name: Validate
+    runs-on: ${{ inputs.runs_on }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+        with:
+          terraform_version: ${{ inputs.terraform_version }}
+      - name: Init
+        run: terraform init -backend=false
+      - name: Validate
+        run: terraform validate
+
+  validate-examples:
+    name: Validate Examples
+    runs-on: ${{ inputs.runs_on }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+        with:
+          terraform_version: ${{ inputs.terraform_version }}
+      - name: Validate examples
+        run: |
+          for dir in examples/*/; do
+            if [ -d "$dir" ]; then
+              echo "::group::Validating $dir"
+              cd "$dir"
+              terraform init -backend=false
+              terraform validate
+              cd "$GITHUB_WORKSPACE"
+              echo "::endgroup::"
+            fi
+          done
+
+  tflint:
+    name: TFLint
+    runs-on: ${{ inputs.runs_on }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: terraform-linters/setup-tflint@90f302c255ef959cbfb4bd10581afecdb7ece3e6 # v4.1.1
+        with:
+          tflint_version: ${{ inputs.tflint_version }}
+      - name: Init TFLint
+        run: tflint --init
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: reviewdog/action-tflint@54a5e5aed57dcfbb4662ec548de876df33d6288d # v1.25.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-check
+          filter_mode: added
+          tflint_init: false
+
+  test:
+    name: Test
+    if: ${{ inputs.run_tests }}
+    runs-on: ${{ inputs.runs_on }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+        with:
+          terraform_version: ${{ inputs.terraform_version }}
+      - name: Init
+        run: terraform init -backend=false
+      - name: Run tests
+        run: terraform test
