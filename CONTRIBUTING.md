@@ -1,4 +1,4 @@
-# Contributing to Rhythmic Terraform Modules
+# Contributing to Rhythmic Open Source
 
 Thank you for your interest in contributing. We welcome pull requests from the community.
 
@@ -6,34 +6,24 @@ Thank you for your interest in contributing. We welcome pull requests from the c
 
 1. **Fork** the repository.
 2. **Clone** your fork locally.
-3. **Create a branch** from `main` using the naming convention `<type>/<short-description>` (e.g., `fix/output-name`, `feat/add-tags-variable`).
+3. **Create a branch** from `master` using the naming convention `<type>/<short-description>` (e.g., `fix/output-name`, `feat/add-tags-variable`).
 4. **Make your changes** and commit using [Conventional Commits](https://www.conventionalcommits.org/) format.
-5. **Open a pull request** against `main`.
+5. **Open a pull request** against `master`.
 
 ## Development Workflow
 
 ### Prerequisites
 
-- [Terraform](https://www.terraform.io/downloads) (version specified in the module)
-- [TFLint](https://github.com/terraform-linters/tflint)
-- [terraform-docs](https://terraform-docs.io/)
-
-### Before Submitting
-
-1. **Format:** Run `terraform fmt -recursive` to ensure consistent formatting.
-2. **Validate:** Run `terraform init -backend=false && terraform validate` to check syntax.
-3. **Lint:** Run `tflint` with the config from this repo's `configs/.tflint-module.hcl`.
-4. **Test:** If the module includes tests, run `terraform test`.
-
+- Install pre-commit hooks.
+- Do not bypass them.
+- Test code before shipping, AI slop submissions will be rejected without review.
+- For projects where test suites are available, ensure appropriate tests are created.
+- 
 ### Documentation
 
-README files are **auto-generated** by terraform-docs. Do not manually edit content between the `<!-- BEGIN_TF_DOCS -->` and `<!-- END_TF_DOCS -->` markers. The CI pipeline will regenerate and commit documentation automatically on PR.
+DO update any documentation impacted by your changes.
 
-To preview locally, copy `configs/.terraform-docs.yml` to your module root and run:
-
-```bash
-terraform-docs markdown table --config .terraform-docs.yml .
-```
+Do not manually edit automatically generated content, such as between the `<!-- BEGIN_TF_DOCS -->` and `<!-- END_TF_DOCS -->` markers for terraform repos. The CI pipeline will regenerate and commit documentation automatically on PR.
 
 ### Shared Configs
 
@@ -63,4 +53,4 @@ chore: update provider version constraint
 
 ## Questions?
 
-Open an issue or reach out to the maintainers listed in `CODEOWNERS`.
+Open an issue or reach out to the maintainers at opensource@rhythmictech.com.
